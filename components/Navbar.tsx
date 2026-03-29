@@ -21,6 +21,8 @@ export default function Navbar() {
           <Link href="/about" className="text-sm font-medium hover:text-hotel-secondary">About</Link>
           <Link href="/accommodation" className="text-sm font-medium hover:text-hotel-secondary">Accommodation</Link>
           <Link href="/events" className="text-sm font-medium hover:text-hotel-secondary">Events</Link>
+          <Link href="/careers" className="text-sm font-medium hover:text-hotel-secondary">Career</Link>
+          <Link href="/contact" className="text-sm font-medium hover:text-hotel-secondary">Contact</Link>
           <button className="bg-hotel-primary text-white px-6 py-2 rounded-md">Reservation</button>
         </div>
 
