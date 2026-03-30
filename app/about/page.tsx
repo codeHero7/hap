@@ -27,8 +27,9 @@ export default function AboutPage() {
           </p>
         </div>
         <div className="bg-slate-100 aspect-square rounded-2xl flex items-center justify-center text-slate-400">
-           {/* Replace with an <img /> tag later */}
-           [Hotel History Image]
+           <img
+            src={`/about/about.jpg`}
+           />
         </div>
       </section>
 

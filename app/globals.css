@@ -2,7 +2,26 @@
 @import "tailwindcss";
 
 @theme {
-  --color-hotel-primary: #1a2a3a;
+  --color-hotel-primary: #f57c00;
   --color-hotel-gold: #c5a059;
   --color-hotel-dark: #0a0a0a;
+}
+
+/* Customizing the React DatePicker to match Hotel Brand */
+.react-datepicker {
+  border: none !important;
+  font-family: inherit !important;
+}
+
+.react-datepicker__day--in-range, 
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--selected {
+  background-color: #1a2a3a !important; /* hotel-primary */
+  color: white !important;
+  border-radius: 0.5rem !important;
+}
+
+.react-datepicker__day--range-start,
+.react-datepicker__day--range-end {
+  background-color: #c5a059 !important; /* hotel-gold */
 }

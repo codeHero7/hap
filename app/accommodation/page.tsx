@@ -1,5 +1,6 @@
 import React from 'react';
 import { ROOMS } from '@/constants/hotel-info';
+import Link from 'next/link';
 
 export default function AccommodationPage() {
   return (
@@ -22,7 +23,10 @@ export default function AccommodationPage() {
               
               {/* Visual Placeholder */}
               <div className="bg-slate-100 aspect-[16/10] flex items-center justify-center text-slate-400 group-hover:bg-slate-200 transition-colors">
-                [ {room.name} Image ]
+                <img 
+                  alt={room.name}
+                  src={`/rooms/${room.id}.jpg`}
+                />
               </div>
 
               {/* Room Details */}
@@ -44,10 +48,13 @@ export default function AccommodationPage() {
                     </span>
                   ))}
                 </div>
-
-                <button className="w-full bg-hotel-primary text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-hotel-gold transition-colors">
-                  Check Availability
-                </button>
+                <Link href="/availability">
+                  <button className="w-full bg-hotel-primary text-white py-4 rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-hotel-gold transition-colors">
+                    Check Availability
+                  </button>
+                </Link>
+                
+                
               </div>
             </div>
           ))}

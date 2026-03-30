@@ -109,5 +109,6 @@ export const HOTEL_IMAGES = [
   "/bg3.jpg",
   "/bg4.jpg",
   "/bg5.jpg",
-  "/bg6.jpg"
+  "/bg6.jpg",
+  "/rooms1.jpg"
 ];

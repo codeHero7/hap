@@ -1,7 +1,10 @@
-import React from 'react';
+"use client";
+import React, { useState } from 'react';
 import { EVENTS } from '@/constants/hotel-info';
+import EventInquiry from '@/components/EventInquiry';
 
 export default function EventsPage() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -24,7 +27,10 @@ export default function EventsPage() {
             >
               {/* Image Side */}
               <div className="w-full lg:w-1/2 aspect-video bg-slate-100 rounded-3xl flex items-center justify-center text-slate-400 border border-slate-100 shadow-sm">
-                [ {event.name} Image ]
+                <img
+                  alt={`${event.name}`}
+                  src={`/events/${event.id}.jpg`}
+                />
               </div>
 
               {/* Text Side */}
@@ -51,7 +57,9 @@ export default function EventsPage() {
                   ))}
                 </div>
 
-                <button className="mt-4 px-8 py-4 bg-hotel-primary text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-hotel-gold transition-all">
+                <button 
+                  onClick={() => setIsOpen(true)}
+                  className="mt-4 px-8 py-4 bg-hotel-primary text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-hotel-gold transition-all">
                   Inquire Now
                 </button>
               </div>
@@ -68,6 +76,23 @@ export default function EventsPage() {
           events@grandazure.com
         </div>
       </section>
+
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
+             {/* Close Button */}
+             <button 
+               onClick={() => setIsOpen(false)}
+               className="absolute top-6 right-6 z-10 w-10 h-10 flex items-center justify-center bg-slate-100 rounded-full hover:bg-red-500 hover:text-white transition-all font-bold"
+             >
+               ✕
+             </button>
+             
+             {/* Use the Component, NOT the Page function */}
+             <EventInquiry />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
