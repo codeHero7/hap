@@ -9,7 +9,7 @@ export default function HeroSlideshow() {
   const [emblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
 
   return (
-    <section className="overflow-hidden w-full h-[80vh] relative" ref={emblaRef}>
+    <section className="overflow-hidden w-full h-[100vh] relative" ref={emblaRef}>
       <div className="flex h-full">
         {HOTEL_IMAGES.map((src, index) => (
           <div key={index} className="flex-[0_0_100%] min-w-0 h-full relative">

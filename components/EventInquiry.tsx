@@ -1,23 +1,56 @@
 "use client";
-import React, { useState } from 'react';
-import { HOTEL_DETAILS } from '@/constants/hotel-info';
-import { Send, Users, Calendar, Info } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Users, Calendar, Info, Loader2, CheckCircle, Phone } from 'lucide-react';
+import { submitEventInquiry } from '@/app/actions/events';
+import { EVENTS } from '@/constants/hotel-info';
 
-export default function EventInquiry() {
+export default function EventInquiry({ initialEventId }: { initialEventId?: string | null }) {
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false); // New state for success message
   const [formData, setFormData] = useState({
     name: '',
+    phone: '', // Added phone
     email: '',
-    eventType: 'Wedding',
+    eventType: initialEventId || EVENTS[0].id, 
     guests: '',
     date: '',
     notes: ''
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const today = new Date().toISOString().split('T')[0];
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Inquiry Submitted:", formData);
-    alert("Thank you! Our event planning team will contact you shortly.");
+    setLoading(true);
+    const result = await submitEventInquiry(formData);
+    setLoading(false);
+    
+    if (result.success) {
+      setSubmitted(true); // Show success message
+    } else {
+      alert("Failed to send inquiry. Please try again.");
+    }
   };
+
+  // SUCCESS MESSAGE VIEW
+  if (submitted) {
+    return (
+      <div className="max-w-4xl mx-auto bg-white rounded-3xl p-16 text-center shadow-xl border border-slate-100 animate-in fade-in zoom-in-95">
+        <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+          <CheckCircle className="text-green-600" size={40} />
+        </div>
+        <h2 className="text-3xl font-bold text-hotel-primary mb-2">Enquiry Sent!</h2>
+        <p className="text-slate-500 text-lg">Thank you for reaching out. We will get back to you shortly.</p>
+        <button 
+          onClick={() => setSubmitted(false)}
+          className="mt-8 text-hotel-gold font-bold uppercase tracking-widest text-sm hover:underline"
+        >
+          Send another inquiry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <section className="bg-slate-50 py-20 px-6">
@@ -29,78 +62,83 @@ export default function EventInquiry() {
 
         <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Contact Details */}
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Full Name</label>
-              <input 
-                type="text" required
-                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Email Address</label>
-              <input 
-                type="email" required
-                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
-              />
+              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Full Name *</label>
+              <input type="text" required className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
+                onChange={(e) => setFormData({...formData, name: e.target.value})} />
             </div>
 
-            {/* Event Specifics */}
-            <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Event Type</label>
-              <select 
-                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold appearance-none"
-                onChange={(e) => setFormData({...formData, eventType: e.target.value})}
-              >
-                <option>Wedding</option>
-                <option>Engagement</option>
-                <option>Tilak Ceremony</option>
-                <option>Birthday Party</option>
-                <option>Corporate Meeting</option>
-              </select>
-            </div>
+            {/* MANDATORY PHONE FIELD */}
             <div className="space-y-2">
               <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1">
-                <Users size={12} /> Expected Guests
+                <Phone size={12}/> Phone Number *
               </label>
-              <input 
-                type="number" placeholder="e.g. 150"
-                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
-                onChange={(e) => setFormData({...formData, guests: e.target.value})}
-              />
+              <input type="tel" required placeholder="e.g. +91 9876543210" className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
+                onChange={(e) => setFormData({...formData, phone: e.target.value})} />
+            </div>
+
+            {/* OPTIONAL EMAIL FIELD */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Email Address (Optional)</label>
+              <input type="email" className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
+                onChange={(e) => setFormData({...formData, email: e.target.value})} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Event Type *</label>
+              <select 
+                value={formData.eventType}
+                onChange={(e) => setFormData({...formData, eventType: e.target.value})}
+                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold appearance-none"
+              >
+                {EVENTS.map((event) => (
+                  <option key={event.id} value={event.id}>{event.name}</option>
+                ))}
+              </select>
             </div>
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1">
+                <Users size={12}/> Estimated Guests (Optional)
+              </label>
+              <input 
+                type="number" 
+                placeholder="e.g. 150"
+                className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
+                onChange={(e) => setFormData({...formData, guests: e.target.value})} 
+              />
+            </div>
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1">
-              <Calendar size={12} /> Preferred Date
+              <Calendar size={12}/> Preferred Date *
             </label>
-            <input 
-              type="date"
-              className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold"
-              onChange={(e) => setFormData({...formData, date: e.target.value})}
-            />
+            <div 
+              onClick={() => dateInputRef.current?.showPicker()} // Opens picker on box click
+              className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center cursor-pointer hover:border-hotel-gold transition-colors"
+            >
+              <input 
+                ref={dateInputRef}
+                type="date" 
+                required 
+                min={today} // Disables previous days
+                className="w-full bg-transparent outline-none cursor-pointer"
+                onChange={(e) => setFormData({...formData, date: e.target.value})} 
+              />
+            </div>
+          </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1">
-              <Info size={12} /> Additional Requirements
-            </label>
-            <textarea 
-              rows={4} placeholder="Tell us more about your vision..."
-              className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold resize-none"
-              onChange={(e) => setFormData({...formData, notes: e.target.value})}
-            ></textarea>
+            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1 flex items-center gap-1"><Info size={12} /> Requirements</label>
+            <textarea rows={4} className="w-full p-4 bg-slate-50 rounded-xl border border-slate-200 outline-none focus:border-hotel-gold resize-none"
+              onChange={(e) => setFormData({...formData, notes: e.target.value})}></textarea>
           </div>
 
-          <button 
-            type="submit"
-            className="w-full bg-hotel-gold text-white py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-hotel-primary transition-all flex items-center justify-center gap-3 shadow-lg shadow-hotel-gold/20"
-          >
-            <Send size={18} />
-            Submit Inquiry
+          <button type="submit" disabled={loading} className="w-full bg-hotel-gold text-white py-5 rounded-2xl font-bold uppercase tracking-widest hover:bg-hotel-primary transition-all flex items-center justify-center gap-3 disabled:bg-slate-300">
+            {loading ? <Loader2 className="animate-spin" /> : <Send size={18} />}
+            {loading ? "Sending..." : "Submit Inquiry"}
           </button>
         </form>
       </div>

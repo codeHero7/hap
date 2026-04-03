@@ -5,6 +5,7 @@ import EventInquiry from '@/components/EventInquiry';
 
 export default function EventsPage() {
   const [isOpen, setIsOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   return (
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -58,7 +59,10 @@ export default function EventsPage() {
                 </div>
 
                 <button 
-                  onClick={() => setIsOpen(true)}
+                  onClick={() => {
+                    setIsOpen(true)
+                    setSelectedEventId(event.id)
+                  }}
                   className="mt-4 px-8 py-4 bg-hotel-primary text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:bg-hotel-gold transition-all">
                   Inquire Now
                 </button>
@@ -89,7 +93,7 @@ export default function EventsPage() {
              </button>
              
              {/* Use the Component, NOT the Page function */}
-             <EventInquiry />
+             <EventInquiry initialEventId={selectedEventId}/>
           </div>
         </div>
       )}
